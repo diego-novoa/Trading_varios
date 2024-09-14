@@ -1,0 +1,5 @@
+import sqlite3
+
+db_name = 'fx_history.db'    
+db_ local = 'db_data\\{0}'.format(db_name)
+
