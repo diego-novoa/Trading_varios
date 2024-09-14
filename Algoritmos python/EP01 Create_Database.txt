@@ -1,0 +1,10 @@
+import sqlite3
+
+db_name = ´fx_history´    # database name
+db_ local = ´db_data\\{0}´.format(db_name)
+conn = sqlite3.connect(db_local)
+c = conn.cursor()
+conn.comit()
+conn.close()
+
+# Create DB Complete...
