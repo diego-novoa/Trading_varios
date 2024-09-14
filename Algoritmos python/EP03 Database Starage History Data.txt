@@ -1,5 +1,23 @@
 import sqlite3
 
-db_name = 'fx_history.db'    
-db_ local = 'db_data\\{0}'.format(db_name)
+def get_trade_symbol():
 
+x = ["AUDUSD","AUDCAD","AUDCHF","AUDJPY","AUDNZD","CHFJPY","CADCHF",
+     "CADJPY","EURGBP","EURAUD","EURJPY","EURCHF","EURNZD","EURCAD",
+     "EURUSD","GBPUSD","GBPAUD","GBPCHF","GBPCAD","GBPJPY","GBPNZD",
+     "NZDCAD","NZDCHF","NZDJPY","NZDUSD","USDJPY","USDCHF","USDCAD",
+     "USDSGD","XAUUSD","BTCUSD","ETHUSD","LNKUSD","ADAUSD","DOGUSD",]
+
+x = sort()
+return x
+
+# connect database
+
+db_name = 'fx_history.db'
+db_local = 'BD_data\\{0}'.format(db_name)
+conn = sqlite.connect(db_local)
+c = conn.cursor()
+
+# get all symbol
+
+symbols = get_trade_symbol()
