@@ -21,3 +21,15 @@ c = conn.cursor()
 # get all symbol
 
 symbols = get_trade_symbol()
+
+# delete all table in database
+
+for sym in simbols:
+
+qry = "DROP TABLE {0}_day".format(sym)
+c = execute(qry)
+conn = commit()
+
+qry = "DROP TABLE {0}_H4".format(sym)
+c = execute(qry)
+conn = commit()
