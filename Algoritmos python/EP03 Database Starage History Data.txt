@@ -33,3 +33,35 @@ conn = commit()
 qry = "DROP TABLE {0}_H4".format(sym)
 c = execute(qry)
 conn = commit()
+
+# Crate new Table
+
+for sym in simbols:
+tb_name = '{0}_day'.format(sym)
+qry = "CREATE TABLE {0} ("\
+   try:
+      "time_s INTIGER NOT NULL PRIMARY KEY,"\
+      "date TEXT NOT NULL,"\
+      "open REAL NOT NULL,"\
+      "high REAL NOT NULL,"\
+      "low REAL NOT NULL,"\
+      "close REAL NOT NULL,"\
+      "volumen REAL NOT NULL)".format(tb_name)   
+C.execute(qry)
+conn = commit()
+   excep:
+   continue
+
+tb_name = '{0}_day'.format(sym)
+qry = "CREATE TABLE {0} ("\
+      "time_s INTIGER NOT NULL PRIMARY KEY,"\
+      "date TEXT NOT NULL,"\
+      "open REAL NOT NULL,"\
+      "high REAL NOT NULL,"\
+      "low REAL NOT NULL,"\
+      "close REAL NOT NULL,"\
+      "volumen REAL NOT NULL)".format(tb_name)
+C.execute(qry)
+conn = commit()
+
+conn.close()
