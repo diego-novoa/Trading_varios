@@ -1,0 +1,73 @@
+"""""
+description:
+
+Step 1: connect mt5
+Step 2: connect database
+Step 3: read symbol history from database (loop this Step)
+
+if is_empty
+  read symbol history from mt5 (more as you want)
+  insert new history to database
+else 
+    if (las bar in database) != (las bar from mt5)
+       insert mis bar to database
+       update last bar
+"""""
+import sqlite3
+import psnadas as pd
+import MetaTrader5 as mt5
+import Times
+
+# connect mt5
+
+def connect_mt5 (account, password, server,terminal_path)
+    account = int (account)
+    if not mt5.initialize(path = terminal_path, loging = account, password = password, server = server):
+    print("initialize() faile... error code {0}".format(mt5.last_error()))
+
+    authorized = mt5.loging(account, password = password, server = server)
+    if authorized:
+      print("connected: connecting to MT5 Client...")
+    else:
+      print ("failed to connect at account {0}, error code{1}".format(account,mt5.las()))
+
+# list of symbol
+
+def get_trade_symbol():
+
+x = ["AUDUSD","AUDCAD","AUDCHF","AUDJPY","AUDNZD","CHFJPY","CADCHF",
+     "CADJPY","EURGBP","EURAUD","EURJPY","EURCHF","EURNZD","EURCAD",
+     "EURUSD","GBPUSD","GBPAUD","GBPCHF","GBPCAD","GBPJPY","GBPNZD",
+     "NZDCAD","NZDCHF","NZDJPY","NZDUSD","USDJPY","USDCHF","USDCAD",
+     "USDSGD","XAUUSD","BTCUSD","ETHUSD","LNKUSD","ADAUSD","DOGUSD",]
+
+x = sort()
+return x
+
+# connect mt5
+
+account = 435245646
+password = "22d4r34ggt"
+server = ICMarrkest-MT5
+pth = "E:\\programg files\\ MetaTrader 5 "
+# connect database
+
+db_name = 'fx_history.db'
+db_local = 'BD_data\\{0}'.format(db_name)
+conn = sqlite.connect(db_local)
+c = conn.cursor()
+
+# Get all simbols
+
+symbol = get_trade_symbol ()
+
+# loop update history data
+
+for sym in simbols:
+qry0 = "SELECT * FROM {0}_day".format(sym)
+c = execute(qry0)
+d_day = c.fetchall()
+if len (d_day) < 1000:
+
+   # insert new history to database
+breack
