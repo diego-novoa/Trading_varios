@@ -44,12 +44,46 @@ x = ["AUDUSD","AUDCAD","AUDCHF","AUDJPY","AUDNZD","CHFJPY","CADCHF",
 x = sort()
 return x
 
+def isert_fx_history (sym_f,df_d,df_h):
+qry = "SELECT MAX(time_s) FROM {0}_{1}".format(sym_f,tf)
+c = execute(qry)
+d_data = c.fetchall()
+
+    for i in range(len(df_d))
+      if d_data[0][0] is None or d_data [0] [0]:
+      tms = df_d['time'][i]
+      date = pd.to_datatime(int(tms), unit ='s').strftime('%Y-%m-%d-%h:%M:00') 
+      opp = df_d ['open'][i]
+      high = df_d ['high'][i]
+      low = df_d ['low'][i]
+      close = df_d ['close'][i]
+      volumen = df_d ['tick_volumen'][i]
+      qry = "INSERT INTO {0}_{1} (time_s,date,open,high,low,close,volumen)"\
+      "({2}, '{3}', {4}, {5}, {6}, {7}, {8})".format(sym_f, tf, tmd, date, opp, high,low,close,volumen)
+      c = execute()
+      conn = commit()
+
+def update_fx_last(sym_f,df_d,tf)  
+    tms = df_d['time'][hist_len -1]
+    date = pd.to_datatime(int(tms), unit ='s').strftime('%Y-%m-%d-%h:%M:00') 
+    opp = df_d ['open'][hist_len -1]
+    high = df_d ['high'][hist_len -1]
+    low = df_d ['low'][hist_len -1]
+    close = df_d ['close'][hist_len -1]
+    volumen = df_d ['tick_volumen'][hist_len -1]
+    qry = "INSERT INTO {0}_{1} (time_s,date,open,high,low,close,volumen)"\
+    "({2}, '{3}', {4}, {5}, {6}, {7}, {8})".format(sym_f, tf, tmd, date, opp, high,low,close,volumen)
+    c = execute()
+    conn = commit()  
+
 # connect mt5
 
 account = 435245646
 password = "22d4r34ggt"
 server = ICMarrkest-MT5
-pth = "E:\\programg files\\ MetaTrader 5 "
+pth = "E:\\programg files\\ MetaTrader 5 IC markets (SC) Main\\terminal64.exe"
+connect_mt5(account,password, server, pth)
+
 # connect database
 
 db_name = 'fx_history.db'
@@ -67,7 +101,17 @@ for sym in simbols:
 qry0 = "SELECT * FROM {0}_day".format(sym)
 c = execute(qry0)
 d_day = c.fetchall()
-if len (d_day) < 1000:
+hist_len = 10
 
+if len (d_day) < 1000:
    # insert new history to database
-breack
+  hist_len = 11
+
+   dt_day = mt5.copy_rates_from_pos(sym,mt5_TIMEFRAME_D1,0,hist_len)
+   df_day = pd.DataFrame(dt_day)
+   dt_H4 = mt5.copy_rates_from_pos(sym,mt5_TIMEFRAME_H4,0,hist_len)
+   df_H4 = pd.DataFrame (dt_H4)
+   insert_fx_history (sym, df_d, 'Day')
+   insert_fx_history (sym, df_h4, 'H4')
+   insert_fx_last (sym, df_d, 'Day')
+   insert_fx_last (sym, df_h4, 'H4')
