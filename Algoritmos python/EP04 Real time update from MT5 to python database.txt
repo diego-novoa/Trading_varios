@@ -44,13 +44,12 @@ x = ["AUDUSD","AUDCAD","AUDCHF","AUDJPY","AUDNZD","CHFJPY","CADCHF",
 x = sort()
 return x
 
-def isert_fx_history (sym_f,df_d,df_h):
+def isert_fx_history (sym_f,df_d,tf):
 qry = "SELECT MAX(time_s) FROM {0}_{1}".format(sym_f,tf)
 c = execute(qry)
 d_data = c.fetchall()
-
-    for i in range(len(df_d))
-      if d_data[0][0] is None or d_data [0] [0]:
+for i in range(len(df_d)):
+    if d_data[0][0] is None or d_data ['time'][i] > d_data [0][0]:
       tms = df_d['time'][i]
       date = pd.to_datatime(int(tms), unit ='s').strftime('%Y-%m-%d-%h:%M:00') 
       opp = df_d ['open'][i]
@@ -58,23 +57,34 @@ d_data = c.fetchall()
       low = df_d ['low'][i]
       close = df_d ['close'][i]
       volumen = df_d ['tick_volumen'][i]
-      qry = "INSERT INTO {0}_{1} (time_s,date,open,high,low,close,volumen)"\
-      "({2}, '{3}', {4}, {5}, {6}, {7}, {8})".format(sym_f, tf, tmd, date, opp, high,low,close,volumen)
-      c = execute()
-      conn = commit()
+      qry = "INSERT INTO {0}_{1} (time_s,date,open,high,low,close,volumen) VALUES"\
+      "({2}, '{3}', {4}, {5}, {6}, {7}, {8})".format(sym_f, tf, tms, date, opp, high,low,close,volumen)
+      c.execute()
+      conn.commit()
 
 def update_fx_last(sym_f,df_d,tf)  
-    tms = df_d['time'][hist_len -1]
-    date = pd.to_datatime(int(tms), unit ='s').strftime('%Y-%m-%d-%h:%M:00') 
-    opp = df_d ['open'][hist_len -1]
-    high = df_d ['high'][hist_len -1]
-    low = df_d ['low'][hist_len -1]
-    close = df_d ['close'][hist_len -1]
-    volumen = df_d ['tick_volumen'][hist_len -1]
-    qry = "INSERT INTO {0}_{1} (time_s,date,open,high,low,close,volumen)"\
-    "({2}, '{3}', {4}, {5}, {6}, {7}, {8})".format(sym_f, tf, tmd, date, opp, high,low,close,volumen)
-    c = execute()
-    conn = commit()  
+    qry = "SELECT MAX(time_s) FROM {0}_{1}".format(sym_f,tf)
+    c = execute(qry)
+    d_data = c.fetchall()
+    lf = len(df_d)
+    try:
+        tms = df_d['time'] [lf-1]
+    except:
+      print("{0}empty data".format(sym_f))
+      print(df_d)    
+      return
+
+    if tms = d_data [0][0]:
+        date = pd.to_datatime(int(tms), unit ='s').strftime('%Y-%m-%d-%h:%M:00') 
+        opp = df_d ['open'][lf-1]
+        high = df_d ['high'][lf-1]
+        low = df_d ['low'][lf-1]
+        close = df_d ['close'][lf-1]
+        volumen = df_d ['tick_volumen'][lf-1]
+        qry = "UPDATE {0}_{1} SET time_s = {2},date ='{3}',open = {4},high ={5},low = {6},close = {7},volumen = {8}"\
+              "WHERE time_s ={2}".format(sym_f, tf, tms, date, opp, high,low,close,volumen)
+        c.execute()
+        conn.commit()  
 
 # connect mt5
 
@@ -88,7 +98,7 @@ connect_mt5(account,password, server, pth)
 
 db_name = 'fx_history.db'
 db_local = 'BD_data\\{0}'.format(db_name)
-conn = sqlite.connect(db_local)
+conn = sqlite3.connect(db_local)
 c = conn.cursor()
 
 # Get all simbols
@@ -98,20 +108,21 @@ symbol = get_trade_symbol ()
 # loop update history data
 
 for sym in simbols:
-qry0 = "SELECT * FROM {0}_day".format(sym)
-c = execute(qry0)
-d_day = c.fetchall()
-hist_len = 10
-
-if len (d_day) < 1000:
-   # insert new history to database
-  hist_len = 11
+    qry0 = "SELECT * FROM {0}_day".format(sym)
+    c.execute(qry0)
+    d_day = c.fetchall()
+    hist_len = 10
+    if len (d_day) < 1000:
+       # insert new history to database
+       hist_len = 20
 
    dt_day = mt5.copy_rates_from_pos(sym,mt5_TIMEFRAME_D1,0,hist_len)
    df_day = pd.DataFrame(dt_day)
-   dt_H4 = mt5.copy_rates_from_pos(sym,mt5_TIMEFRAME_H4,0,hist_len)
-   df_H4 = pd.DataFrame (dt_H4)
+   dt_h4 = mt5.copy_rates_from_pos(sym,mt5_TIMEFRAME_H4,0,hist_len)
+   df_h4 = pd.DataFrame (dt_h4)
    insert_fx_history (sym, df_d, 'Day')
    insert_fx_history (sym, df_h4, 'H4')
    insert_fx_last (sym, df_d, 'Day')
    insert_fx_last (sym, df_h4, 'H4')
+   print("{0} update complete...".format(sym))
+   time.sleep(1)
